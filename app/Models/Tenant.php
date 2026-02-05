@@ -26,6 +26,19 @@ class Tenant extends Model implements Auditable, HasMedia
         'company_name',
         'license_number',
         'invoice_registration_number',
+        'zip_code',
+        'address',
+        'phone',
+        'fax',
+        'representative_title',
+        'license_details',
+        'social_insurance',
+        'invoice_number',
+    ];
+
+    protected $casts = [
+        'license_details' => 'array',
+        'social_insurance' => 'array',
     ];
 
     public function users()

@@ -37,6 +37,11 @@ class ProjectQuotations extends Component
         session()->flash('message', '案件を完全に削除しました。');
     }
 
+    public function create()
+    {
+        return redirect()->route('projects.create');
+    }
+
     public function exportCsv()
     {
         $csv = \League\Csv\Writer::createFromFileObject(new \SplTempFileObject());
@@ -46,7 +51,7 @@ class ProjectQuotations extends Component
         if ($this->showTrashed) {
             $query->onlyTrashed();
         }
-        
+
         $query->chunk(100, function ($projects) use ($csv) {
             foreach ($projects as $project) {
                 $csv->insertOne([

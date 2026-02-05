@@ -23,9 +23,22 @@ class Staff extends Model implements Auditable
         'social_insurance_status',
         'emergency_contact',
         'qualifications',
+        'furigana',
+        'birthday',
+        'job_type',
+        'experience_years',
+        'hiring_date',
+        'health_info',
+        'insurance_details',
     ];
 
     protected $casts = [
         'qualifications' => 'array',
+        'social_insurance_status' => 'array',
+        'emergency_contact' => 'array',
+        'health_info' => 'array',
+        'insurance_details' => 'array',
+        'birthday' => 'date',
+        'hiring_date' => 'date',
     ];
 }

@@ -19,5 +19,15 @@ class Vehicle extends Model implements Auditable
         'tenant_id',
         'name',
         'license_plate',
+        'model_name',
+        'plate_number',
+        'owner_name',
+        'inspection_expiry',
+        'insurance_info',
+    ];
+
+    protected $casts = [
+        'inspection_expiry' => 'date',
+        'insurance_info' => 'array',
     ];
 }

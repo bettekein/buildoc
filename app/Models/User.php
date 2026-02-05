@@ -10,14 +10,11 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use OwenIt\Auditing\Contracts\Auditable;
 use Mattiverse\Userstamps\Traits\Userstamps;
-use Filament\Models\Contracts\FilamentUser;
-use Filament\Models\Contracts\HasTenants;
-use Filament\Panel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable implements Auditable, FilamentUser, HasTenants
+class User extends Authenticatable implements Auditable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, SoftDeletes, \OwenIt\Auditing\Auditable, Userstamps, HasRoles;
@@ -28,35 +25,6 @@ class User extends Authenticatable implements Auditable, FilamentUser, HasTenant
     public function tenant()
     {
         return $this->belongsTo(\App\Models\Tenant::class);
-    }
-
-    /**
-     * Determine if the user can access the Filament panel.
-     */
-    public function canAccessPanel(Panel $panel): bool
-    {
-        // For now, allow all users or restrict based on role. 
-        // Since we just installed Permission, we can use it.
-        // return $this->hasRole('admin') || $this->hasPermissionTo('access_admin');
-        
-        // As a starting point, return true for local dev or simple auth check
-        return true; 
-    }
-
-    /**
-     * Get the tenants that the user belongs to.
-     */
-    public function getTenants(Panel $panel): Collection
-    {
-        return collect([$this->tenant]);
-    }
-
-    /**
-     * Determine if the user can access the given tenant.
-     */
-    public function canAccessTenant(Model $tenant): bool
-    {
-        return $this->tenant_id === $tenant->id;
     }
 
     /**

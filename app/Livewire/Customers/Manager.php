@@ -1,0 +1,50 @@
+<?php
+
+namespace App\Livewire\Customers;
+
+use Livewire\Component;
+
+use App\Models\Customer;
+use Livewire\WithPagination;
+
+class Manager extends Component
+{
+    use WithPagination;
+
+    public $search = '';
+    public $showCreateModal = false;
+    public $name, $phone, $address; // Basic fields for now
+
+    public function create()
+    {
+        $this->reset(['name', 'phone', 'address']);
+        $this->showCreateModal = true;
+    }
+
+    public function save()
+    {
+        $this->validate([
+            'name' => 'required|min:2',
+            'phone' => 'nullable|string',
+            'address' => 'nullable|string',
+        ]);
+
+        Customer::create([
+            'name' => $this->name,
+            'phone' => $this->phone,
+            'address' => $this->address,
+        ]);
+
+        $this->showCreateModal = false;
+        session()->flash('message', '顧客を登録しました。');
+    }
+
+    public function render()
+    {
+        return view('livewire.customers.manager', [
+            'customers' => Customer::where('name', 'like', '%' . $this->search . '%')
+                ->latest()
+                ->paginate(10)
+        ])->layout('layouts.app');
+    }
+}

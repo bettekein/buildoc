@@ -19,5 +19,11 @@ class Tool extends Model implements Auditable
         'tenant_id',
         'name',
         'specification',
+        'management_no',
+        'last_inspection_date',
+    ];
+
+    protected $casts = [
+        'last_inspection_date' => 'date',
     ];
 }

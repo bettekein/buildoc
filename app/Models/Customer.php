@@ -21,5 +21,8 @@ class Customer extends Model implements Auditable
         'representative_name',
         'phone',
         'address',
+        'customer_code',
+        'zip_code',
+        'fax',
     ];
 }

@@ -25,6 +25,7 @@ class QuotationDetail extends Model implements Auditable
         'unit_price',
         'cost_price',
         'total_price',
+        'sort_order',
     ];
 
     public function item()

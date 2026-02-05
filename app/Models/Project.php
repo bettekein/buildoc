@@ -25,11 +25,19 @@ class Project extends Model implements Auditable, HasMedia
         'period_start',
         'period_end',
         'status',
+        'site_address',
+        'work_description',
+        'order_number',
+        'project_number',
+        'contract_date',
+        'retention_rate',
     ];
 
     protected $casts = [
         'period_start' => 'date',
         'period_end' => 'date',
+        'contract_date' => 'date',
+        'retention_rate' => 'decimal:2',
     ];
 
     public function customer()

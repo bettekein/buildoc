@@ -19,6 +19,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Allow Super Admin to access Log Viewer
+        \Illuminate\Support\Facades\Gate::define('viewLogViewer', function ($user) {
+            return $user->hasRole('Super Admin');
+        });
     }
 }
