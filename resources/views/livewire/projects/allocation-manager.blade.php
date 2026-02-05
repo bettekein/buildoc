@@ -11,6 +11,29 @@
                         {{ $project->period_start?->format('Y/m/d') }} - {{ $project->period_end?->format('Y/m/d') }}
                     </p>
                 </div>
+                <!-- Green File Export Dropdown -->
+                <div class="relative" x-data="{ open: false }">
+                    <button @click="open = !open" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium inline-flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        グリーンファイル出力
+                        <svg class="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div x-show="open" @click.away="open = false" x-cloak class="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-20">
+                        <div class="py-1">
+                            <a href="{{ route('greenfile.worker-roster', $project) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                📋 作業員名簿
+                            </a>
+                            <a href="{{ route('greenfile.vehicle-machinery', $project) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                🚗 持込機械届（車両）
+                            </a>
+                            <a href="{{ route('greenfile.tool-equipment', $project) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                🔧 持込機械届（工具）
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 

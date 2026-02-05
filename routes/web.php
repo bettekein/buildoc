@@ -27,6 +27,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/masters/tools', App\Livewire\Masters\ToolManager::class)->name('masters.tools');
     Route::get('/projects/{project}/quotation', App\Livewire\QuotationManager::class)->name('quotations.edit');
     Route::get('/projects/{project}/quotation/pdf', [App\Http\Controllers\QuotationPdfController::class, 'show'])->name('quotations.pdf');
+
+    // Green File Exports
+    Route::get('/projects/{project}/greenfile/worker-roster', [App\Http\Controllers\GreenFileController::class, 'workerRoster'])->name('greenfile.worker-roster');
+    Route::get('/projects/{project}/greenfile/vehicle-machinery', [App\Http\Controllers\GreenFileController::class, 'vehicleMachinery'])->name('greenfile.vehicle-machinery');
+    Route::get('/projects/{project}/greenfile/tool-equipment', [App\Http\Controllers\GreenFileController::class, 'toolEquipment'])->name('greenfile.tool-equipment');
+
     // Route::get('/projects/{project}/billings', App\Livewire\BillingManager::class)->name('billings.index');
 
     // Super Admin Routes (Should be protected by role middleware in production)
