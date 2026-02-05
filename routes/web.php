@@ -17,6 +17,7 @@ Route::view('profile', 'profile')
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/projects', App\Livewire\ProjectQuotations::class)->name('projects.index');
     Route::get('/projects/create', App\Livewire\Projects\Create::class)->name('projects.create');
+    Route::get('/projects/{project}/edit', App\Livewire\Projects\Edit::class)->name('projects.edit');
     Route::get('/customers', App\Livewire\Customers\Manager::class)->name('customers.index');
 
     // Masters

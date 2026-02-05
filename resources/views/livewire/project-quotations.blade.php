@@ -100,6 +100,10 @@
                                         class="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 px-3 py-1 rounded-md transition-colors">
                                         見積
                                     </a>
+                                    <a href="{{ route('projects.edit', $project) }}"
+                                        class="text-indigo-600 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 px-3 py-1 rounded-md transition-colors">
+                                        編集
+                                    </a>
                                     {{-- <a href="{{ route('billings.index', $project) }}"
                                         class="text-green-600 hover:text-green-900 bg-green-50 hover:bg-green-100 px-3 py-1 rounded-md transition-colors">
                                         請求

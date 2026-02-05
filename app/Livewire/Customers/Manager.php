@@ -43,9 +43,23 @@ class Manager extends Component
         }
     }
 
+    public $customerId = null;
+
+    // ... (existing properties)
+
     public function create()
     {
-        $this->reset(['name', 'phone', 'address']);
+        $this->reset(['name', 'phone', 'address', 'customerId']);
+        $this->showCreateModal = true;
+    }
+
+    public function edit($id)
+    {
+        $customer = Customer::findOrFail($id);
+        $this->customerId = $customer->id;
+        $this->name = $customer->name;
+        $this->phone = $customer->phone;
+        $this->address = $customer->address;
         $this->showCreateModal = true;
     }
 
@@ -57,14 +71,25 @@ class Manager extends Component
             'address' => 'nullable|string',
         ]);
 
-        Customer::create([
-            'name' => $this->name,
-            'phone' => $this->phone,
-            'address' => $this->address,
-        ]);
+        if ($this->customerId) {
+            $customer = Customer::findOrFail($this->customerId);
+            $customer->update([
+                'name' => $this->name,
+                'phone' => $this->phone,
+                'address' => $this->address,
+            ]);
+            session()->flash('message', '顧客情報を更新しました。');
+        } else {
+            Customer::create([
+                'name' => $this->name,
+                'phone' => $this->phone,
+                'address' => $this->address,
+            ]);
+            session()->flash('message', '顧客を登録しました。');
+        }
 
         $this->showCreateModal = false;
-        session()->flash('message', '顧客を登録しました。');
+        $this->reset(['name', 'phone', 'address', 'customerId']);
     }
 
     public function render()

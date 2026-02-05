@@ -43,9 +43,23 @@ class ToolManager extends Component
         }
     }
 
+    public $toolId = null;
+
+    // ... (existing properties)
+
     public function create()
     {
-        $this->reset(['name', 'management_no', 'last_inspection_date']);
+        $this->reset(['name', 'management_no', 'last_inspection_date', 'toolId']);
+        $this->showCreateModal = true;
+    }
+
+    public function edit($id)
+    {
+        $tool = Tool::findOrFail($id);
+        $this->toolId = $tool->id;
+        $this->name = $tool->name;
+        $this->management_no = $tool->management_no;
+        $this->last_inspection_date = $tool->last_inspection_date ? $tool->last_inspection_date->format('Y-m-d') : null;
         $this->showCreateModal = true;
     }
 
@@ -57,14 +71,25 @@ class ToolManager extends Component
             'last_inspection_date' => 'nullable|date',
         ]);
 
-        Tool::create([
-            'name' => $this->name,
-            'management_no' => $this->management_no,
-            'last_inspection_date' => $this->last_inspection_date,
-        ]);
+        if ($this->toolId) {
+            $tool = Tool::findOrFail($this->toolId);
+            $tool->update([
+                'name' => $this->name,
+                'management_no' => $this->management_no,
+                'last_inspection_date' => $this->last_inspection_date,
+            ]);
+            session()->flash('message', '工具情報を更新しました。');
+        } else {
+            Tool::create([
+                'name' => $this->name,
+                'management_no' => $this->management_no,
+                'last_inspection_date' => $this->last_inspection_date,
+            ]);
+            session()->flash('message', '工具を登録しました。');
+        }
 
         $this->showCreateModal = false;
-        session()->flash('message', '工具を登録しました。');
+        $this->reset(['name', 'management_no', 'last_inspection_date', 'toolId']);
     }
 
     public function render()

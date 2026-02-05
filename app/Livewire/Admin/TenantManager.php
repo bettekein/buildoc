@@ -27,6 +27,13 @@ class TenantManager extends Component
         $this->showCreateModal = true;
     }
 
+    public function cancel()
+    {
+        $this->showCreateModal = false;
+        $this->showEditModal = false;
+        $this->reset(['company_name', 'license_number', 'phone', 'address', 'tenantId']);
+    }
+
     public function edit($id)
     {
         $tenant = Tenant::findOrFail($id);

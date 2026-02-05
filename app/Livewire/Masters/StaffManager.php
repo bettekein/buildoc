@@ -43,9 +43,23 @@ class StaffManager extends Component
         }
     }
 
+    public $staffId = null;
+
+    // ... (existing properties)
+
     public function create()
     {
-        $this->reset(['name', 'job_type', 'hiring_date']);
+        $this->reset(['name', 'job_type', 'hiring_date', 'staffId']);
+        $this->showCreateModal = true;
+    }
+
+    public function edit($id)
+    {
+        $staff = Staff::findOrFail($id);
+        $this->staffId = $staff->id;
+        $this->name = $staff->name;
+        $this->job_type = $staff->job_type;
+        $this->hiring_date = $staff->hiring_date ? $staff->hiring_date->format('Y-m-d') : null;
         $this->showCreateModal = true;
     }
 
@@ -57,14 +71,25 @@ class StaffManager extends Component
             'hiring_date' => 'nullable|date',
         ]);
 
-        Staff::create([
-            'name' => $this->name,
-            'job_type' => $this->job_type,
-            'hiring_date' => $this->hiring_date,
-        ]);
+        if ($this->staffId) {
+            $staff = Staff::findOrFail($this->staffId);
+            $staff->update([
+                'name' => $this->name,
+                'job_type' => $this->job_type,
+                'hiring_date' => $this->hiring_date,
+            ]);
+            session()->flash('message', 'スタッフ情報を更新しました。');
+        } else {
+            Staff::create([
+                'name' => $this->name,
+                'job_type' => $this->job_type,
+                'hiring_date' => $this->hiring_date,
+            ]);
+            session()->flash('message', 'スタッフを登録しました。');
+        }
 
         $this->showCreateModal = false;
-        session()->flash('message', 'スタッフを登録しました。');
+        $this->reset(['name', 'job_type', 'hiring_date', 'staffId']);
     }
 
     public function render()

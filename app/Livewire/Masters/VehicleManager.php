@@ -43,9 +43,23 @@ class VehicleManager extends Component
         }
     }
 
+    public $vehicleId = null;
+
+    // ... (existing properties)
+
     public function create()
     {
-        $this->reset(['name', 'plate_number', 'inspection_expiry']);
+        $this->reset(['name', 'plate_number', 'inspection_expiry', 'vehicleId']);
+        $this->showCreateModal = true;
+    }
+
+    public function edit($id)
+    {
+        $vehicle = Vehicle::findOrFail($id);
+        $this->vehicleId = $vehicle->id;
+        $this->name = $vehicle->name;
+        $this->plate_number = $vehicle->plate_number;
+        $this->inspection_expiry = $vehicle->inspection_expiry ? $vehicle->inspection_expiry->format('Y-m-d') : null;
         $this->showCreateModal = true;
     }
 
@@ -57,14 +71,25 @@ class VehicleManager extends Component
             'inspection_expiry' => 'nullable|date',
         ]);
 
-        Vehicle::create([
-            'name' => $this->name,
-            'plate_number' => $this->plate_number,
-            'inspection_expiry' => $this->inspection_expiry,
-        ]);
+        if ($this->vehicleId) {
+            $vehicle = Vehicle::findOrFail($this->vehicleId);
+            $vehicle->update([
+                'name' => $this->name,
+                'plate_number' => $this->plate_number,
+                'inspection_expiry' => $this->inspection_expiry,
+            ]);
+            session()->flash('message', '車両情報を更新しました。');
+        } else {
+            Vehicle::create([
+                'name' => $this->name,
+                'plate_number' => $this->plate_number,
+                'inspection_expiry' => $this->inspection_expiry,
+            ]);
+            session()->flash('message', '車両を登録しました。');
+        }
 
         $this->showCreateModal = false;
-        session()->flash('message', '車両を登録しました。');
+        $this->reset(['name', 'plate_number', 'inspection_expiry', 'vehicleId']);
     }
 
     public function render()
