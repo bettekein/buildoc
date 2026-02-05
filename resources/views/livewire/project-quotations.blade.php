@@ -3,8 +3,11 @@
         {{ Breadcrumbs::render('projects.index') }}
         <div class="flex justify-between items-center mb-8">
             <h2 class="text-3xl font-bold text-gray-800 tracking-tight">案件一覧</h2>
-            <!-- Trash Toggle -->
+            <!-- Search and Actions -->
             <div class="flex items-center space-x-4">
+                <input type="text" wire:model.live.debounce.300ms="search" placeholder="案件名・顧客名で検索..."
+                    class="rounded-lg border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 w-64">
+
                 <label class="flex items-center space-x-2 text-sm text-gray-600 cursor-pointer">
                     <input type="checkbox" wire:model.live="showTrashed"
                         class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
@@ -97,10 +100,10 @@
                                         class="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 px-3 py-1 rounded-md transition-colors">
                                         見積
                                     </a>
-                                    <a href="{{ route('billings.index', $project) }}"
+                                    {{-- <a href="{{ route('billings.index', $project) }}"
                                         class="text-green-600 hover:text-green-900 bg-green-50 hover:bg-green-100 px-3 py-1 rounded-md transition-colors">
                                         請求
-                                    </a>
+                                    </a> --}}
                                     <!-- Add Delete Button for active items? -->
                                     <button wire:click="delete({{ $project->id }})"
                                         onclick="confirm('ゴミ箱に移動しますか？') || event.stopImmediatePropagation()"

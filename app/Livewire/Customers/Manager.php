@@ -13,7 +13,35 @@ class Manager extends Component
 
     public $search = '';
     public $showCreateModal = false;
+    public $showTrashed = false;
     public $name, $phone, $address; // Basic fields for now
+
+    public function restore($id)
+    {
+        $customer = Customer::withTrashed()->find($id);
+        if ($customer) {
+            $customer->restore();
+            session()->flash('message', '顧客を復元しました。');
+        }
+    }
+
+    public function delete($id)
+    {
+        $customer = Customer::find($id);
+        if ($customer) {
+            $customer->delete();
+            session()->flash('message', '顧客をゴミ箱に移動しました。');
+        }
+    }
+
+    public function forceDelete($id)
+    {
+        $customer = Customer::withTrashed()->find($id);
+        if ($customer) {
+            $customer->forceDelete();
+            session()->flash('message', '顧客を完全に削除しました。');
+        }
+    }
 
     public function create()
     {
@@ -41,10 +69,14 @@ class Manager extends Component
 
     public function render()
     {
+        $query = Customer::where('name', 'like', '%' . $this->search . '%')->latest();
+
+        if ($this->showTrashed) {
+            $query->onlyTrashed();
+        }
+
         return view('livewire.customers.manager', [
-            'customers' => Customer::where('name', 'like', '%' . $this->search . '%')
-                ->latest()
-                ->paginate(10)
+            'customers' => $query->paginate(10)
         ])->layout('layouts.app');
     }
 }

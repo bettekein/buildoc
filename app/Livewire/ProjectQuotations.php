@@ -13,6 +13,7 @@ class ProjectQuotations extends Component
     use WithPagination, Sortable;
 
     public $showTrashed = false;
+    public $search = '';
 
     public function restore($id)
     {
@@ -77,6 +78,15 @@ class ProjectQuotations extends Component
 
         if ($this->showTrashed) {
             $query->onlyTrashed();
+        }
+
+        if ($this->search) {
+            $query->where(function ($q) {
+                $q->where('name', 'like', '%' . $this->search . '%')
+                    ->orWhereHas('customer', function ($q) {
+                        $q->where('name', 'like', '%' . $this->search . '%');
+                    });
+            });
         }
 
         return view('livewire.project-quotations', [

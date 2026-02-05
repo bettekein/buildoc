@@ -12,18 +12,13 @@ class QuotationPdfController extends Controller
     {
         $project->load(['customer', 'tenant', 'quotationItems.details']);
 
-        $html = view('quotations.pdf', [
+        $pdf = Pdf::loadView('quotations.pdf', [
             'project' => $project,
-        ])->render();
+        ]);
 
-        $pdf = \Spatie\Browsershot\Browsershot::html($html)
-            ->format('A4')
-            ->margins(10, 10, 10, 10)
-            ->showBackground()
-            ->pdf();
+        // Optional: Set paper size and orientation
+        $pdf->setPaper('A4', 'portrait');
 
-        return response($pdf)
-            ->header('Content-Type', 'application/pdf')
-            ->header('Content-Disposition', "inline; filename=\"quotation-{$project->id}.pdf\"");
+        return $pdf->stream("quotation-{$project->id}.pdf");
     }
 }

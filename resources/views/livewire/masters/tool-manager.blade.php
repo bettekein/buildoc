@@ -1,9 +1,9 @@
 <div class="p-6 bg-gray-50 min-h-screen font-sans">
     <div class="max-w-7xl mx-auto">
         <div class="flex justify-between items-center mb-8">
-            <h2 class="text-3xl font-bold text-gray-800 tracking-tight">顧客一覧</h2>
+            <h2 class="text-3xl font-bold text-gray-800 tracking-tight">工具マスタ</h2>
             <div class="flex items-center space-x-4">
-                <input type="text" wire:model.live.debounce.300ms="search" placeholder="顧客名で検索..."
+                <input type="text" wire:model.live.debounce.300ms="search" placeholder="工具名で検索..."
                     class="rounded-lg border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500 w-64">
 
                 <label class="flex items-center space-x-2 text-sm text-gray-600 cursor-pointer">
@@ -14,7 +14,7 @@
 
                 <button wire:click="create"
                     class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-                    + 新規顧客
+                    + 新規工具
                 </button>
             </div>
         </div>
@@ -29,30 +29,38 @@
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">顧客名
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">工具名
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">電話番号
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">管理番号
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">住所
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">最終点検日
                         </th>
-                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">アクション</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            アクション</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                    @forelse ($customers as $customer)
+                    @forelse ($tools as $tool)
                         <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $customer->name }}
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $tool->name }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $tool->management_no }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ $tool->last_inspection_date ? $tool->last_inspection_date->format('Y-m-d') : '' }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $customer->phone }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $customer->address }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                                 @if($showTrashed)
-                                    <button wire:click="restore({{ $customer->id }})" class="text-green-600 hover:text-green-900 bg-green-50 hover:bg-green-100 px-3 py-1 rounded-md transition-colors">復元</button>
-                                    <button wire:click="forceDelete({{ $customer->id }})" class="text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 px-3 py-1 rounded-md transition-colors" onclick="confirm('本当に削除しますか？') || event.stopImmediatePropagation()">完全削除</button>
+                                    <button wire:click="restore({{ $tool->id }})"
+                                        class="text-green-600 hover:text-green-900 bg-green-50 hover:bg-green-100 px-3 py-1 rounded-md transition-colors">復元</button>
+                                    <button wire:click="forceDelete({{ $tool->id }})"
+                                        class="text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 px-3 py-1 rounded-md transition-colors"
+                                        onclick="confirm('本当に削除しますか？') || event.stopImmediatePropagation()">完全削除</button>
                                 @else
-                                    <button wire:click="delete({{ $customer->id }})" class="text-gray-400 hover:text-red-600 ml-2" onclick="confirm('ゴミ箱に移動しますか？') || event.stopImmediatePropagation()">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    <button wire:click="delete({{ $tool->id }})" class="text-gray-400 hover:text-red-600 ml-2"
+                                        onclick="confirm('ゴミ箱に移動しますか？') || event.stopImmediatePropagation()">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                            stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                         </svg>
                                     </button>
                                 @endif
@@ -60,13 +68,13 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="3" class="px-6 py-10 text-center text-gray-500">顧客が登録されていません。</td>
+                            <td colspan="3" class="px-6 py-10 text-center text-gray-500">工具が登録されていません。</td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
             <div class="px-6 py-4 border-t border-gray-100">
-                {{ $customers->links() }}
+                {{ $tools->links() }}
             </div>
         </div>
 
@@ -80,22 +88,22 @@
                     <div
                         class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
                         <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">新規顧客登録</h3>
+                            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">新規工具登録</h3>
                             <div class="mt-2 space-y-4">
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700">顧客名</label>
+                                    <label class="block text-sm font-medium text-gray-700">工具名</label>
                                     <input type="text" wire:model="name"
                                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                                     @error('name') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700">電話番号</label>
-                                    <input type="text" wire:model="phone"
+                                    <label class="block text-sm font-medium text-gray-700">管理番号</label>
+                                    <input type="text" wire:model="management_no"
                                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700">住所</label>
-                                    <input type="text" wire:model="address"
+                                    <label class="block text-sm font-medium text-gray-700">最終点検日</label>
+                                    <input type="date" wire:model="last_inspection_date"
                                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                                 </div>
                             </div>
