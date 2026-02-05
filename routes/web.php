@@ -25,6 +25,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/masters/staff', App\Livewire\Masters\StaffManager::class)->name('masters.staff');
     Route::get('/masters/vehicles', App\Livewire\Masters\VehicleManager::class)->name('masters.vehicles');
     Route::get('/masters/tools', App\Livewire\Masters\ToolManager::class)->name('masters.tools');
+    Route::get('/masters/subcontractors', App\Livewire\Masters\SubcontractorManager::class)->name('masters.subcontractors');
     Route::get('/projects/{project}/quotation', App\Livewire\QuotationManager::class)->name('quotations.edit');
     Route::get('/projects/{project}/quotation/pdf', [App\Http\Controllers\QuotationPdfController::class, 'show'])->name('quotations.pdf');
 

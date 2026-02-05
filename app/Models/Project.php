@@ -75,4 +75,19 @@ class Project extends Model implements Auditable, HasMedia
             ->withPivot('start_date', 'end_date')
             ->withTimestamps();
     }
+
+    public function subcontractors()
+    {
+        return $this->belongsToMany(Subcontractor::class, 'project_subcontractors')
+            ->withPivot('tier', 'parent_subcontractor_id', 'work_content', 'contract_amount', 'contract_date', 'period_start', 'period_end', 'safety_manager', 'site_chief_engineer')
+            ->withTimestamps();
+    }
+
+    /**
+     * 一次下請業者のみ取得
+     */
+    public function firstTierSubcontractors()
+    {
+        return $this->subcontractors()->wherePivot('tier', 1);
+    }
 }

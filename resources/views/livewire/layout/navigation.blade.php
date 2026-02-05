@@ -90,6 +90,9 @@ new class extends Component {
                                 <x-dropdown-link :href="route('customers.index')" wire:navigate>
                                     顧客マスタ
                                 </x-dropdown-link>
+                                <x-dropdown-link :href="route('masters.subcontractors')" wire:navigate>
+                                    下請業者マスタ
+                                </x-dropdown-link>
                                 <x-dropdown-link :href="route('masters.staff')" wire:navigate>
                                     スタッフマスタ
                                 </x-dropdown-link>
