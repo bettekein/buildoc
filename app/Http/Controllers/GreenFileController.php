@@ -6,6 +6,8 @@ use App\Models\Project;
 use App\Exports\WorkerRosterExport;
 use App\Exports\VehicleMachineryExport;
 use App\Exports\ToolEquipmentExport;
+use App\Exports\SocialInsuranceExport;
+use App\Exports\NewWorkerSurveyExport;
 use Maatwebsite\Excel\Facades\Excel;
 
 class GreenFileController extends Controller
@@ -27,4 +29,17 @@ class GreenFileController extends Controller
         $filename = "持込機械届_工具_{$project->name}_" . date('Ymd') . ".xlsx";
         return Excel::download(new ToolEquipmentExport($project), $filename);
     }
+
+    public function socialInsurance(Project $project)
+    {
+        $filename = "社会保険加入状況_{$project->name}_" . date('Ymd') . ".xlsx";
+        return Excel::download(new SocialInsuranceExport($project), $filename);
+    }
+
+    public function newWorkerSurvey(Project $project)
+    {
+        $filename = "新規入場者調査票_{$project->name}_" . date('Ymd') . ".xlsx";
+        return Excel::download(new NewWorkerSurveyExport($project), $filename);
+    }
 }
+

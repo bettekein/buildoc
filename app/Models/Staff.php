@@ -30,6 +30,18 @@ class Staff extends Model implements Auditable
         'hiring_date',
         'health_info',
         'insurance_details',
+        // グリーンファイル追加項目
+        'last_medical_checkup',
+        'sendout_education_date',
+        'employment_type',
+        'is_sole_proprietor',
+        'has_special_labor_insurance',
+        'qualification_details',
+        'skill_trainings',
+        'special_educations',
+        'driver_licenses',
+        'family_address',
+        'nationality',
     ];
 
     protected $casts = [
@@ -40,6 +52,15 @@ class Staff extends Model implements Auditable
         'insurance_details' => 'array',
         'birthday' => 'date',
         'hiring_date' => 'date',
+        // グリーンファイル追加項目
+        'last_medical_checkup' => 'date',
+        'sendout_education_date' => 'date',
+        'is_sole_proprietor' => 'boolean',
+        'has_special_labor_insurance' => 'boolean',
+        'qualification_details' => 'array',
+        'skill_trainings' => 'array',
+        'special_educations' => 'array',
+        'driver_licenses' => 'array',
     ];
 
     public function projects()

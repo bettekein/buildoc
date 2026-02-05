@@ -20,11 +20,20 @@
                         グリーンファイル出力
                         <svg class="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
-                    <div x-show="open" @click.away="open = false" x-cloak class="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-20">
+                    <div x-show="open" @click.away="open = false" x-cloak class="absolute right-0 mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-20">
                         <div class="py-1">
+                            <div class="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wide">労務安全関係</div>
                             <a href="{{ route('greenfile.worker-roster', $project) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                 📋 作業員名簿
                             </a>
+                            <a href="{{ route('greenfile.social-insurance', $project) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                🏥 社会保険加入状況
+                            </a>
+                            <a href="{{ route('greenfile.new-worker-survey', $project) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                📝 新規入場者調査票
+                            </a>
+                            <div class="border-t border-gray-100 my-1"></div>
+                            <div class="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wide">機械・車両関係</div>
                             <a href="{{ route('greenfile.vehicle-machinery', $project) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                 🚗 持込機械届（車両）
                             </a>
