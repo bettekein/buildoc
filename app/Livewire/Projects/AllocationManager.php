@@ -6,6 +6,7 @@ use App\Models\Project;
 use App\Models\Staff;
 use App\Models\Vehicle;
 use App\Models\Tool;
+use App\Models\Subcontractor;
 use Livewire\Component;
 
 class AllocationManager extends Component
@@ -16,6 +17,7 @@ class AllocationManager extends Component
     public $showStaffModal = false;
     public $showVehicleModal = false;
     public $showToolModal = false;
+    public $showSubcontractorModal = false;
 
     // Form fields for adding
     public $selectedStaffId = null;
@@ -31,6 +33,16 @@ class AllocationManager extends Component
     public $selectedToolId = null;
     public $toolStartDate = null;
     public $toolEndDate = null;
+
+    // Subcontractor form fields
+    public $selectedSubcontractorId = null;
+    public $subcontractorTier = 1;
+    public $subcontractorWorkContent = '';
+    public $subcontractorContractAmount = null;
+    public $subcontractorContractDate = null;
+    public $subcontractorSafetyManager = '';
+    public $subcontractorChiefEngineer = '';
+    public $selectedParentSubcontractorId = null;
 
     // Active tab
     public $activeTab = 'staff';
@@ -176,15 +188,77 @@ class AllocationManager extends Component
         session()->flash('message', '工具の配置を解除しました。');
     }
 
+    // Subcontractor methods
+    public function openSubcontractorModal()
+    {
+        $this->resetSubcontractorForm();
+        $this->showSubcontractorModal = true;
+    }
+
+    public function resetSubcontractorForm()
+    {
+        $this->selectedSubcontractorId = null;
+        $this->subcontractorTier = 1;
+        $this->subcontractorWorkContent = '';
+        $this->subcontractorContractAmount = null;
+        $this->subcontractorContractDate = null;
+        $this->subcontractorSafetyManager = '';
+        $this->subcontractorChiefEngineer = '';
+        $this->selectedParentSubcontractorId = null;
+    }
+
+    public function addSubcontractor()
+    {
+        $this->validate([
+            'selectedSubcontractorId' => 'required|exists:subcontractors,id',
+            'subcontractorTier' => 'required|integer|min:1|max:3',
+        ]);
+
+        // Check if already assigned at same tier
+        if (
+            $this->project->subcontractors()
+                ->where('subcontractor_id', $this->selectedSubcontractorId)
+                ->where('tier', $this->subcontractorTier)
+                ->exists()
+        ) {
+            session()->flash('error', 'この下請業者は既にこの階層に配置されています。');
+            return;
+        }
+
+        $this->project->subcontractors()->attach($this->selectedSubcontractorId, [
+            'tier' => $this->subcontractorTier,
+            'work_content' => $this->subcontractorWorkContent,
+            'contract_amount' => $this->subcontractorContractAmount,
+            'contract_date' => $this->subcontractorContractDate,
+            'safety_manager' => $this->subcontractorSafetyManager,
+            'site_chief_engineer' => $this->subcontractorChiefEngineer,
+            'parent_subcontractor_id' => $this->selectedParentSubcontractorId,
+        ]);
+
+        $this->showSubcontractorModal = false;
+        $this->resetSubcontractorForm();
+        session()->flash('message', '下請業者を配置しました。');
+    }
+
+    public function removeSubcontractor($subcontractorId, $tier)
+    {
+        $this->project->subcontractors()
+            ->wherePivot('tier', $tier)
+            ->detach($subcontractorId);
+        session()->flash('message', '下請業者の配置を解除しました。');
+    }
+
     public function render()
     {
         return view('livewire.projects.allocation-manager', [
             'assignedStaff' => $this->project->staff()->get(),
             'assignedVehicles' => $this->project->vehicles()->get(),
             'assignedTools' => $this->project->tools()->get(),
+            'assignedSubcontractors' => $this->project->subcontractors()->orderBy('pivot_tier')->get(),
             'availableStaff' => Staff::whereNotIn('id', $this->project->staff()->pluck('staff.id'))->get(),
             'availableVehicles' => Vehicle::whereNotIn('id', $this->project->vehicles()->pluck('vehicles.id'))->get(),
             'availableTools' => Tool::whereNotIn('id', $this->project->tools()->pluck('tools.id'))->get(),
+            'availableSubcontractors' => Subcontractor::all(),
         ])->layout('layouts.app');
     }
 }
