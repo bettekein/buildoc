@@ -26,4 +26,11 @@ class Tool extends Model implements Auditable
     protected $casts = [
         'last_inspection_date' => 'date',
     ];
+
+    public function projects()
+    {
+        return $this->belongsToMany(Project::class, 'project_tools')
+            ->withPivot('start_date', 'end_date')
+            ->withTimestamps();
+    }
 }

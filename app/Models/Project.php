@@ -54,4 +54,25 @@ class Project extends Model implements Auditable, HasMedia
     {
         return $this->hasMany(ProgressBilling::class);
     }
+
+    public function staff()
+    {
+        return $this->belongsToMany(Staff::class, 'project_staff')
+            ->withPivot('is_foreman', 'role', 'start_date', 'end_date')
+            ->withTimestamps();
+    }
+
+    public function vehicles()
+    {
+        return $this->belongsToMany(Vehicle::class, 'project_vehicles')
+            ->withPivot('start_date', 'end_date')
+            ->withTimestamps();
+    }
+
+    public function tools()
+    {
+        return $this->belongsToMany(Tool::class, 'project_tools')
+            ->withPivot('start_date', 'end_date')
+            ->withTimestamps();
+    }
 }

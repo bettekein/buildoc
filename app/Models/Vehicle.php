@@ -30,4 +30,11 @@ class Vehicle extends Model implements Auditable
         'inspection_expiry' => 'date',
         'insurance_info' => 'array',
     ];
+
+    public function projects()
+    {
+        return $this->belongsToMany(Project::class, 'project_vehicles')
+            ->withPivot('start_date', 'end_date')
+            ->withTimestamps();
+    }
 }

@@ -1,0 +1,339 @@
+<div class="p-6 bg-gray-50 min-h-screen font-sans">
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <div class="mb-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <a href="{{ route('projects.index') }}" class="text-sm text-blue-600 hover:text-blue-900">&larr;
+                        案件一覧に戻る</a>
+                    <h2 class="text-2xl font-bold text-gray-800 mt-2">{{ $project->name }}</h2>
+                    <p class="text-sm text-gray-500">顧客: {{ $project->customer->name ?? '未設定' }} ｜ 工期:
+                        {{ $project->period_start?->format('Y/m/d') }} - {{ $project->period_end?->format('Y/m/d') }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Flash Messages -->
+        @if (session()->has('message'))
+            <div class="mb-4 p-4 bg-green-100 text-green-700 rounded-lg">{{ session('message') }}</div>
+        @endif
+        @if (session()->has('error'))
+            <div class="mb-4 p-4 bg-red-100 text-red-700 rounded-lg">{{ session('error') }}</div>
+        @endif
+
+        <!-- Tabs -->
+        <div class="border-b border-gray-200 mb-6">
+            <nav class="-mb-px flex space-x-8">
+                <button wire:click="$set('activeTab', 'staff')"
+                    class="py-4 px-1 border-b-2 font-medium text-sm {{ $activeTab === 'staff' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}">
+                    スタッフ配置 ({{ $assignedStaff->count() }})
+                </button>
+                <button wire:click="$set('activeTab', 'vehicles')"
+                    class="py-4 px-1 border-b-2 font-medium text-sm {{ $activeTab === 'vehicles' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}">
+                    車両配置 ({{ $assignedVehicles->count() }})
+                </button>
+                <button wire:click="$set('activeTab', 'tools')"
+                    class="py-4 px-1 border-b-2 font-medium text-sm {{ $activeTab === 'tools' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}">
+                    工具配置 ({{ $assignedTools->count() }})
+                </button>
+            </nav>
+        </div>
+
+        <!-- Staff Tab -->
+        @if($activeTab === 'staff')
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+                    <h3 class="text-lg font-semibold text-gray-800">配置スタッフ一覧</h3>
+                    <button wire:click="openStaffModal"
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium">+
+                        スタッフ追加</button>
+                </div>
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">氏名</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">職種</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">役割</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">職長</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">期間</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @forelse($assignedStaff as $staff)
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $staff->name }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $staff->job_type }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $staff->pivot->role ?? '-' }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                    <button wire:click="toggleForeman({{ $staff->id }})"
+                                        class="px-2 py-1 rounded text-xs font-semibold {{ $staff->pivot->is_foreman ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-600' }}">
+                                        {{ $staff->pivot->is_foreman ? '職長' : '-' }}
+                                    </button>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {{ $staff->pivot->start_date ?? '-' }} ～ {{ $staff->pivot->end_date ?? '-' }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
+                                    <button wire:click="removeStaff({{ $staff->id }})"
+                                        onclick="confirm('配置を解除しますか？') || event.stopImmediatePropagation()"
+                                        class="text-red-600 hover:text-red-900">解除</button>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="px-6 py-10 text-center text-gray-500">スタッフが配置されていません。</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        @endif
+
+        <!-- Vehicles Tab -->
+        @if($activeTab === 'vehicles')
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+                    <h3 class="text-lg font-semibold text-gray-800">配置車両一覧</h3>
+                    <button wire:click="openVehicleModal"
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium">+
+                        車両追加</button>
+                </div>
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">車両名</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ナンバー</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">車検満了日</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">使用期間</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @forelse($assignedVehicles as $vehicle)
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $vehicle->name }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $vehicle->plate_number }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {{ $vehicle->inspection_expiry?->format('Y-m-d') }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {{ $vehicle->pivot->start_date ?? '-' }} ～ {{ $vehicle->pivot->end_date ?? '-' }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
+                                    <button wire:click="removeVehicle({{ $vehicle->id }})"
+                                        onclick="confirm('配置を解除しますか？') || event.stopImmediatePropagation()"
+                                        class="text-red-600 hover:text-red-900">解除</button>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="px-6 py-10 text-center text-gray-500">車両が配置されていません。</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        @endif
+
+        <!-- Tools Tab -->
+        @if($activeTab === 'tools')
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+                    <h3 class="text-lg font-semibold text-gray-800">配置工具一覧</h3>
+                    <button wire:click="openToolModal"
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium">+
+                        工具追加</button>
+                </div>
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">工具名</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">管理番号</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">最終点検日</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">使用期間</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @forelse($assignedTools as $tool)
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $tool->name }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $tool->management_no }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {{ $tool->last_inspection_date?->format('Y-m-d') }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {{ $tool->pivot->start_date ?? '-' }} ～ {{ $tool->pivot->end_date ?? '-' }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
+                                    <button wire:click="removeTool({{ $tool->id }})"
+                                        onclick="confirm('配置を解除しますか？') || event.stopImmediatePropagation()"
+                                        class="text-red-600 hover:text-red-900">解除</button>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="px-6 py-10 text-center text-gray-500">工具が配置されていません。</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        @endif
+    </div>
+
+    <!-- Staff Modal -->
+    @if($showStaffModal)
+        <div class="fixed z-10 inset-0 overflow-y-auto">
+            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                <div class="fixed inset-0 bg-gray-500 bg-opacity-75" wire:click="$set('showStaffModal', false)"></div>
+                <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
+                <div
+                    class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">スタッフ追加</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">スタッフ選択</label>
+                                <select wire:model="selectedStaffId"
+                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                                    <option value="">選択してください</option>
+                                    @foreach($availableStaff as $s)
+                                        <option value="{{ $s->id }}">{{ $s->name }} ({{ $s->job_type }})</option>
+                                    @endforeach
+                                </select>
+                                @error('selectedStaffId') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">役割・担当業務</label>
+                                <input type="text" wire:model="staffRole"
+                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                            </div>
+                            <div class="flex items-center">
+                                <input type="checkbox" wire:model="staffIsForeman" id="isForeman"
+                                    class="rounded border-gray-300 text-blue-600">
+                                <label for="isForeman" class="ml-2 text-sm text-gray-700">職長として配置</label>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">入場開始日</label>
+                                    <input type="date" wire:model="staffStartDate"
+                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">入場終了日</label>
+                                    <input type="date" wire:model="staffEndDate"
+                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse">
+                        <button wire:click="addStaff"
+                            class="w-full sm:w-auto sm:ml-3 inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-white font-medium hover:bg-blue-700">追加</button>
+                        <button wire:click="$set('showStaffModal', false)"
+                            class="mt-3 sm:mt-0 w-full sm:w-auto inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-gray-700 hover:bg-gray-50">キャンセル</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    <!-- Vehicle Modal -->
+    @if($showVehicleModal)
+        <div class="fixed z-10 inset-0 overflow-y-auto">
+            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                <div class="fixed inset-0 bg-gray-500 bg-opacity-75" wire:click="$set('showVehicleModal', false)"></div>
+                <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
+                <div
+                    class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">車両追加</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">車両選択</label>
+                                <select wire:model="selectedVehicleId"
+                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                                    <option value="">選択してください</option>
+                                    @foreach($availableVehicles as $v)
+                                        <option value="{{ $v->id }}">{{ $v->name }} ({{ $v->plate_number }})</option>
+                                    @endforeach
+                                </select>
+                                @error('selectedVehicleId') <span class="text-red-500 text-xs">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">使用開始日</label>
+                                    <input type="date" wire:model="vehicleStartDate"
+                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">使用終了日</label>
+                                    <input type="date" wire:model="vehicleEndDate"
+                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse">
+                        <button wire:click="addVehicle"
+                            class="w-full sm:w-auto sm:ml-3 inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-white font-medium hover:bg-blue-700">追加</button>
+                        <button wire:click="$set('showVehicleModal', false)"
+                            class="mt-3 sm:mt-0 w-full sm:w-auto inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-gray-700 hover:bg-gray-50">キャンセル</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    <!-- Tool Modal -->
+    @if($showToolModal)
+        <div class="fixed z-10 inset-0 overflow-y-auto">
+            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                <div class="fixed inset-0 bg-gray-500 bg-opacity-75" wire:click="$set('showToolModal', false)"></div>
+                <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
+                <div
+                    class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">工具追加</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">工具選択</label>
+                                <select wire:model="selectedToolId"
+                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                                    <option value="">選択してください</option>
+                                    @foreach($availableTools as $t)
+                                        <option value="{{ $t->id }}">{{ $t->name }} ({{ $t->management_no }})</option>
+                                    @endforeach
+                                </select>
+                                @error('selectedToolId') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">使用開始日</label>
+                                    <input type="date" wire:model="toolStartDate"
+                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">使用終了日</label>
+                                    <input type="date" wire:model="toolEndDate"
+                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse">
+                        <button wire:click="addTool"
+                            class="w-full sm:w-auto sm:ml-3 inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-white font-medium hover:bg-blue-700">追加</button>
+                        <button wire:click="$set('showToolModal', false)"
+                            class="mt-3 sm:mt-0 w-full sm:w-auto inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-gray-700 hover:bg-gray-50">キャンセル</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+</div>

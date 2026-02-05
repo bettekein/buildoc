@@ -41,4 +41,11 @@ class Staff extends Model implements Auditable
         'birthday' => 'date',
         'hiring_date' => 'date',
     ];
+
+    public function projects()
+    {
+        return $this->belongsToMany(Project::class, 'project_staff')
+            ->withPivot('is_foreman', 'role', 'start_date', 'end_date')
+            ->withTimestamps();
+    }
 }

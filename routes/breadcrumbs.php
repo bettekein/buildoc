@@ -26,6 +26,12 @@ Breadcrumbs::for('projects.edit', function (BreadcrumbTrail $trail, $project) {
     $trail->push('案件編集: ' . $project->name, route('projects.edit', $project));
 });
 
+// Projects > Allocations
+Breadcrumbs::for('projects.allocations', function (BreadcrumbTrail $trail, $project) {
+    $trail->parent('projects.index');
+    $trail->push($project->name . ' (手配管理)', route('projects.allocations', $project));
+});
+
 // Project > Quotation
 Breadcrumbs::for('quotations.edit', function (BreadcrumbTrail $trail, $project) {
     $trail->parent('projects.index');
