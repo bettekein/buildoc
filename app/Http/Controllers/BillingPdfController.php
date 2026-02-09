@@ -3,35 +3,33 @@
 namespace App\Http\Controllers;
 
 use App\Models\ProgressBilling;
-use App\Models\Project;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Spatie\Browsershot\Browsershot;
 
 class BillingPdfController extends Controller
 {
-    public function show(Project $project, ProgressBilling $billing)
+    public function show(ProgressBilling $billing)
     {
-        // Ensure the billing belongs to the project (optional but good for safety)
-        if ($billing->project_id !== $project->id) {
-            abort(404);
-        }
-
-        $project->load('customer', 'tenant');
-        // $billing->load('items'); 
+        $billing->load(['project.customer', 'project.tenant']);
 
         $html = view('billings.pdf', [
-            'project' => $project,
             'billing' => $billing,
+            'project' => $billing->project,
+            'customer' => $billing->project->customer,
+            'tenant' => $billing->project->tenant,
         ])->render();
 
-        $pdf = \Spatie\Browsershot\Browsershot::html($html)
+        $pdf = Browsershot::html($html)
+            ->setNodeBinary('C:\\Program Files\\nodejs\\node.exe')
             ->format('A4')
             ->margins(10, 10, 10, 10)
             ->showBackground()
             ->pdf();
 
-        return response($pdf)
-            ->header('Content-Type', 'application/pdf')
-            ->header('Content-Disposition', "inline; filename=\"billing-{$billing->billing_number}.pdf\"");
+        return response()->streamDownload(
+            fn() => print ($pdf),
+            "billing-{$billing->billing_number}.pdf",
+            ['Content-Type' => 'application/pdf']
+        );
     }
 }

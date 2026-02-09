@@ -41,5 +41,17 @@ class GreenFileController extends Controller
         $filename = "新規入場者調査票_{$project->name}_" . date('Ymd') . ".xlsx";
         return Excel::download(new NewWorkerSurveyExport($project), $filename);
     }
+
+    public function constructionLedger(Project $project)
+    {
+        $filename = "施工体制台帳_{$project->name}_" . date('Ymd') . ".xlsx";
+        return Excel::download(new \App\Exports\ConstructionLedgerExport($project), $filename);
+    }
+
+    public function organizationChart(Project $project)
+    {
+        $filename = "下請負業者編成表_{$project->name}_" . date('Ymd') . ".xlsx";
+        return Excel::download(new \App\Exports\OrganizationChartExport($project), $filename);
+    }
 }
 

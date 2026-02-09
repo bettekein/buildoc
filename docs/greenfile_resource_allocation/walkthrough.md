@@ -33,8 +33,35 @@
   - パンくずリスト設定を追加
   - 案件一覧に「手配」ボタンを追加
 
+### 5. グリーンファイル出力機能 (Phase 1)
+- **ファイル**: `app/Exports/*`, `app/Http/Controllers/GreenFileController.php`
+- **機能**:
+  - 作業員名簿、持込機械届（車両・工具）、社会保険加入状況、新規入場者調査票のExcel出力。
+
+### 6. 下請業者管理機能 (Phase 2)
+- **ファイル**: `app/Models/Subcontractor.php`, `database/migrations/*_create_subcontractors_table.php`, `app/Livewire/Masters/SubcontractorManager.php`
+- **機能**:
+  - 下請業者マスターのCRUD（作成・読み取り・更新・削除）。
+  - 建設業許可情報の管理。
+  - 案件への下請業者配置機能（階層管理付き）。
+  - **New**: 施工体制台帳、下請負業者編成表のExcel出力。
+
+### 7. 自社情報設定・機能改善
+- **ファイル**: `app/Livewire/Settings/CompanyProfile.php`, `resources/views/livewire/settings/company-profile.blade.php`, `App\Models\Tenant.php`
+- **機能**:
+  - 自社情報（建設業許可詳細、社会保険）の詳細設定画面。
+  - 500エラーの解消（Export処理の安定化）。
+  - 下請業者マスター入力項目の拡充（社会保険情報の追加）。
+
+### 8. 工種マスター (Phase 3)
+- **ファイル**: `app/Models/MasterWorkCategory.php`, `app/Livewire/Masters/WorkCategoryManager.php`
+- **機能**:
+  - 見積書で使用する標準的な「工種」（例：仮設工事、基礎工事）を管理。
+  - 見積書編集画面で入力補完として利用可能。
+
 ## 確認方法
-1. 案件一覧から「手配」ボタンをクリック
-2. 「スタッフ配置」タブでスタッフを追加・配置解除
-3. 「車両配置」「工具配置」タブでも同様の操作を確認
-4. 職長フラグをクリックしてトグルできることを確認
+1. **下請業者マスター**: メニュー「マスタ管理」>「下請業者マスタ」から下請業者を登録。
+2. **工種マスター**: メニュー「マスタ管理」>「工種マスタ」からよく使う工種を登録。
+3. **案件リソース配置**: 案件一覧 > 「手配」ボタン > 「下請業者配置」タブ。
+4. **見積書作成**: 案件詳細 > 見積書タブ > 編集。工種入力時にマスタから候補が表示されることを確認。
+5. **グリーンファイル**: 右上のボタンから各帳票を出力し、内容を確認。

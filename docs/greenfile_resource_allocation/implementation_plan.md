@@ -52,3 +52,25 @@
 *   `app/Models/Staff.php` (Update)
 *   `app/Livewire/Projects/AllocationManager.php` (New)
 *   `resources/views/livewire/projects/allocation-manager.blade.php` (New)
+
+## Phase 2: 下請業者管理と帳票出力（完了）
+- [x] 下請業者マスター (`Subcontractor`) の作成
+- [x] CRUD操作の実装（Livewire）
+- [x] 関連テーブル (`project_subcontractors` - 階層構造付き) の作成
+- [x] 案件への下請業者配置UIの実装
+- [x] **帳票出力機能の実装**
+  - 施工体制台帳 (Excel)
+  - 下請負業者編成表 (Excel)
+- [x] **マスタ入力拡充 (Phase 2.5)**
+  - 自社情報設定画面の追加
+  - 下請マスタへの社会保険情報追加
+  - Exportクラスの安定化（500エラー修正）
+
+## Phase 3: 請求書強化（進行中）
+- [x] **工種マスタの実装**
+  - モデル (`MasterWorkCategory`) 作成
+  - 管理画面（一覧・編集）の実装
+  - 見積書作成 (`QuotationEditor`) への入力補完連動
+- [ ] **請求書・インボイス対応**
+  - インボイス登録番号の印字実装
+  - 内訳請求書作成機能の拡充（実装予定）

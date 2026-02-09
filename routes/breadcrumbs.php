@@ -38,16 +38,39 @@ Breadcrumbs::for('quotations.edit', function (BreadcrumbTrail $trail, $project) 
     $trail->push($project->name . ' (見積)', route('quotations.edit', $project));
 });
 
-// Project > Billings
-Breadcrumbs::for('billings.index', function (BreadcrumbTrail $trail, $project) {
+// Project > Billings > Create
+Breadcrumbs::for('billings.create', function (BreadcrumbTrail $trail, $project) {
     $trail->parent('projects.index');
-    $trail->push($project->name . ' (請求)', route('billings.index', $project));
+    $trail->push($project->name, route('projects.edit', $project));
+    $trail->push('請求書作成');
 });
 
 // Project > Billings > Edit
-Breadcrumbs::for('billings.edit', function (BreadcrumbTrail $trail, $project, $billing) {
-    $trail->parent('billings.index', $project);
-    $trail->push('請求書編集 (第' . $billing->billing_round . '回)', route('billings.edit', [$project, $billing]));
+Breadcrumbs::for('billings.edit', function (BreadcrumbTrail $trail, $billing) {
+    $trail->parent('projects.index');
+    $trail->push($billing->project->name, route('projects.edit', $billing->project));
+    $trail->push('請求書編集', route('billings.edit', $billing));
+});
+
+// Masters
+Breadcrumbs::for('masters.subcontractors', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard');
+    $trail->push('下請業者マスタ', route('masters.subcontractors'));
+});
+
+Breadcrumbs::for('masters.staff', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard');
+    $trail->push('スタッフマスタ', route('masters.staff'));
+});
+
+Breadcrumbs::for('masters.vehicles', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard');
+    $trail->push('車両マスタ', route('masters.vehicles'));
+});
+
+Breadcrumbs::for('masters.tools', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard');
+    $trail->push('工具マスタ', route('masters.tools'));
 });
 
 // Audits

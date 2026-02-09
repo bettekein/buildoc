@@ -178,6 +178,46 @@
                             </div>
                         </div>
 
+                        <!-- 社会保険加入状況 -->
+                        <div class="mt-6 border-t pt-4">
+                            <h4 class="text-sm font-medium text-gray-700 mb-3">社会保険加入状況</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <!-- 健康保険 -->
+                                <div class="bg-gray-50 p-3 rounded">
+                                    <h5 class="text-xs font-bold text-gray-600 mb-2">健康保険</h5>
+                                    <div class="flex items-center mb-2">
+                                        <input type="checkbox" wire:model="socialInsurance.health_insurance.joined"
+                                            class="rounded border-gray-300 text-blue-600 shadow-sm">
+                                        <span class="ml-2 text-xs">加入</span>
+                                    </div>
+                                    <input type="text" wire:model="socialInsurance.health_insurance.office_number"
+                                        placeholder="番号" class="w-full text-xs border-gray-300 rounded">
+                                </div>
+                                <!-- 厚生年金 -->
+                                <div class="bg-gray-50 p-3 rounded">
+                                    <h5 class="text-xs font-bold text-gray-600 mb-2">厚生年金保険</h5>
+                                    <div class="flex items-center mb-2">
+                                        <input type="checkbox" wire:model="socialInsurance.pension_insurance.joined"
+                                            class="rounded border-gray-300 text-blue-600 shadow-sm">
+                                        <span class="ml-2 text-xs">加入</span>
+                                    </div>
+                                    <input type="text" wire:model="socialInsurance.pension_insurance.office_number"
+                                        placeholder="番号" class="w-full text-xs border-gray-300 rounded">
+                                </div>
+                                <!-- 雇用保険 -->
+                                <div class="bg-gray-50 p-3 rounded">
+                                    <h5 class="text-xs font-bold text-gray-600 mb-2">雇用保険</h5>
+                                    <div class="flex items-center mb-2">
+                                        <input type="checkbox" wire:model="socialInsurance.employment_insurance.joined"
+                                            class="rounded border-gray-300 text-blue-600 shadow-sm">
+                                        <span class="ml-2 text-xs">加入</span>
+                                    </div>
+                                    <input type="text" wire:model="socialInsurance.employment_insurance.office_number"
+                                        placeholder="番号" class="w-full text-xs border-gray-300 rounded">
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- 建設業許可 -->
                         <div class="mt-6 border-t pt-4">
                             <h4 class="text-sm font-medium text-gray-700 mb-3">建設業許可</h4>

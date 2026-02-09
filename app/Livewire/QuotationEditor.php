@@ -11,7 +11,7 @@ use Illuminate\Support\Collection;
 class QuotationEditor extends Component
 {
     public Project $project;
-    
+
     // Main Data Structure
     // [
     //    'id' => int|null, 'name' => string, 'sort_order' => int, 
@@ -27,18 +27,23 @@ class QuotationEditor extends Component
     public float $totalProfit = 0;
     public float $totalProfitRate = 0;
 
+    public $workCategories = [];
+
     public function mount(Project $project)
     {
         $this->project = $project;
         $this->loadData();
+        $this->workCategories = \App\Models\MasterWorkCategory::orderBy('sort_order')->pluck('name')->toArray();
     }
 
     public function loadData()
     {
         $quotationItems = $this->project->quotationItems()
-            ->with(['details' => function ($query) {
-                $query->orderBy('sort_order');
-            }])
+            ->with([
+                'details' => function ($query) {
+                    $query->orderBy('sort_order');
+                }
+            ])
             ->orderBy('sort_order')
             ->get();
 
@@ -130,9 +135,9 @@ class QuotationEditor extends Component
 
         foreach ($this->items as $i => $item) {
             foreach ($item['details'] as $j => $detail) {
-                $qty = (float)($detail['quantity'] ?? 0);
-                $price = (float)($detail['unit_price'] ?? 0);
-                $cost = (float)($detail['cost_price'] ?? 0);
+                $qty = (float) ($detail['quantity'] ?? 0);
+                $price = (float) ($detail['unit_price'] ?? 0);
+                $cost = (float) ($detail['cost_price'] ?? 0);
 
                 $lineTotal = $qty * $price;
                 $lineCost = $qty * $cost;
@@ -168,10 +173,10 @@ class QuotationEditor extends Component
                     'total_amount' => 0, // Recalc later if stored
                 ]
             );
-            
+
             // Assign ID back if new
             $this->items[$i]['id'] = $item->id;
-            
+
             foreach ($itemData['details'] as $j => $detailData) {
                 // Save Detail
                 $detail = QuotationDetail::updateOrCreate(
@@ -189,15 +194,15 @@ class QuotationEditor extends Component
                         'sort_order' => $j,
                     ]
                 );
-                 $this->items[$i]['details'][$j]['id'] = $detail->id;
+                $this->items[$i]['details'][$j]['id'] = $detail->id;
             }
         }
-        
+
         $this->loadData(); // Reload to refresh state
         session()->flash('message', '見積データを保存しました。');
     }
 
-    public function updateOrder($itemIndex, $newOrderItems) 
+    public function updateOrder($itemIndex, $newOrderItems)
     {
         // For drag and drop reordering details
         // $newOrderItems comes from SortableJS usually containing 'value' (detail index)
@@ -205,7 +210,7 @@ class QuotationEditor extends Component
         // This usually requires a specific sortable plugin implementation.
         // I will implement "Move Up/Down" logic for simplicity and robustness in this environment.
     }
-    
+
     public function moveItemUp($index)
     {
         if ($index > 0) {
@@ -236,7 +241,7 @@ class QuotationEditor extends Component
     public function moveDetailDown($itemIndex, $detailIndex)
     {
         if ($detailIndex < count($this->items[$itemIndex]['details']) - 1) {
-             $temp = $this->items[$itemIndex]['details'][$detailIndex];
+            $temp = $this->items[$itemIndex]['details'][$detailIndex];
             $this->items[$itemIndex]['details'][$detailIndex] = $this->items[$itemIndex]['details'][$detailIndex + 1];
             $this->items[$itemIndex]['details'][$detailIndex + 1] = $temp;
         }

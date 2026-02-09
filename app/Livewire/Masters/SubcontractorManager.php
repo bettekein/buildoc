@@ -35,6 +35,8 @@ class SubcontractorManager extends Component
     public $newLicenseCategory = '一般';
     public $newLicenseNumber = '';
     public $newLicenseDate = '';
+    // Social Insurance (new)
+    public $socialInsurance = [];
 
     protected $rules = [
         'name' => 'required|string|max:255',
@@ -62,6 +64,11 @@ class SubcontractorManager extends Component
     public function openModal()
     {
         $this->reset(['name', 'name_kana', 'representative_name', 'representative_title', 'postal_code', 'address', 'phone', 'fax', 'email', 'safety_officer', 'employment_manager', 'chief_engineer', 'licenses', 'editingId']);
+        $this->socialInsurance = [
+            'health_insurance' => ['joined' => false, 'office_number' => ''],
+            'pension_insurance' => ['joined' => false, 'office_number' => ''],
+            'employment_insurance' => ['joined' => false, 'office_number' => ''],
+        ];
         $this->showModal = true;
     }
 
@@ -82,6 +89,12 @@ class SubcontractorManager extends Component
         $this->employment_manager = $sub->employment_manager;
         $this->chief_engineer = $sub->chief_engineer;
         $this->licenses = $sub->construction_licenses ?? [];
+        $this->socialInsurance = array_merge([
+            'health_insurance' => ['joined' => false, 'office_number' => ''],
+            'pension_insurance' => ['joined' => false, 'office_number' => ''],
+            'employment_insurance' => ['joined' => false, 'office_number' => ''],
+        ], $sub->social_insurance ?? []);
+
         $this->showModal = true;
     }
 
@@ -125,6 +138,7 @@ class SubcontractorManager extends Component
             'employment_manager' => $this->employment_manager,
             'chief_engineer' => $this->chief_engineer,
             'construction_licenses' => $this->licenses,
+            'social_insurance' => $this->socialInsurance,
         ];
 
         if ($this->editingId) {

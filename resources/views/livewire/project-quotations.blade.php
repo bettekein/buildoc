@@ -108,10 +108,10 @@
                                         class="text-teal-600 hover:text-teal-900 bg-teal-50 hover:bg-teal-100 px-3 py-1 rounded-md transition-colors">
                                         手配
                                     </a>
-                                    {{-- <a href="{{ route('billings.index', $project) }}"
+                                    <a href="{{ route('billings.create', $project) }}"
                                         class="text-green-600 hover:text-green-900 bg-green-50 hover:bg-green-100 px-3 py-1 rounded-md transition-colors">
-                                        請求
-                                    </a> --}}
+                                        請求作成
+                                    </a>
                                     <!-- Add Delete Button for active items? -->
                                     <button wire:click="delete({{ $project->id }})"
                                         onclick="confirm('ゴミ箱に移動しますか？') || event.stopImmediatePropagation()"

@@ -102,6 +102,9 @@ new class extends Component {
                                 <x-dropdown-link :href="route('masters.tools')" wire:navigate>
                                     工具マスタ
                                 </x-dropdown-link>
+                                <x-dropdown-link :href="route('masters.work_categories')" wire:navigate>
+                                    工種マスタ
+                                </x-dropdown-link>
                             </x-slot>
                         </x-dropdown>
                     </div>
@@ -131,6 +134,9 @@ new class extends Component {
                     <x-slot name="content">
                         <x-dropdown-link :href="route('profile')" wire:navigate>
                             {{ __('Profile') }}
+                        </x-dropdown-link>
+                        <x-dropdown-link :href="route('settings.company')" wire:navigate>
+                            自社情報設定
                         </x-dropdown-link>
 
                         <!-- Authentication -->

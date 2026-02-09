@@ -54,6 +54,17 @@
                                 class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                 🔧 持込機械届（工具）
                             </a>
+                            <div class="border-t border-gray-100 my-1"></div>
+                            <div class="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wide">施工体制関係
+                            </div>
+                            <a href="{{ route('greenfile.construction-ledger', $project) }}"
+                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                🏗️ 施工体制台帳
+                            </a>
+                            <a href="{{ route('greenfile.organization-chart', $project) }}"
+                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                🌲 下請負業者編成表
+                            </a>
                         </div>
                     </div>
                 </div>

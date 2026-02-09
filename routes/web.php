@@ -21,11 +21,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/projects/{project}/allocations', App\Livewire\Projects\AllocationManager::class)->name('projects.allocations');
     Route::get('/customers', App\Livewire\Customers\Manager::class)->name('customers.index');
 
+    // Settings
+    Route::get('/settings/company', App\Livewire\Settings\CompanyProfile::class)->name('settings.company');
+
     // Masters
     Route::get('/masters/staff', App\Livewire\Masters\StaffManager::class)->name('masters.staff');
     Route::get('/masters/vehicles', App\Livewire\Masters\VehicleManager::class)->name('masters.vehicles');
     Route::get('/masters/tools', App\Livewire\Masters\ToolManager::class)->name('masters.tools');
     Route::get('/masters/subcontractors', App\Livewire\Masters\SubcontractorManager::class)->name('masters.subcontractors');
+    Route::get('/masters/work-categories', App\Livewire\Masters\WorkCategoryManager::class)->name('masters.work_categories');
     Route::get('/projects/{project}/quotation', App\Livewire\QuotationManager::class)->name('quotations.edit');
     Route::get('/projects/{project}/quotation/pdf', [App\Http\Controllers\QuotationPdfController::class, 'show'])->name('quotations.pdf');
 
@@ -35,6 +39,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/projects/{project}/greenfile/tool-equipment', [App\Http\Controllers\GreenFileController::class, 'toolEquipment'])->name('greenfile.tool-equipment');
     Route::get('/projects/{project}/greenfile/social-insurance', [App\Http\Controllers\GreenFileController::class, 'socialInsurance'])->name('greenfile.social-insurance');
     Route::get('/projects/{project}/greenfile/new-worker-survey', [App\Http\Controllers\GreenFileController::class, 'newWorkerSurvey'])->name('greenfile.new-worker-survey');
+    Route::get('/projects/{project}/greenfile/construction-ledger', [App\Http\Controllers\GreenFileController::class, 'constructionLedger'])->name('greenfile.construction-ledger');
+    Route::get('/projects/{project}/greenfile/organization-chart', [App\Http\Controllers\GreenFileController::class, 'organizationChart'])->name('greenfile.organization-chart');
+
+    Route::get('/projects/{project}/billings/create', App\Livewire\BillingEditor::class)->name('billings.create');
+    Route::get('/billings/{billing}/edit', App\Livewire\BillingEditor::class)->name('billings.edit');
+    Route::get('/billings/{billing}/pdf', [App\Http\Controllers\BillingPdfController::class, 'show'])->name('billings.pdf');
 
     // Route::get('/projects/{project}/billings', App\Livewire\BillingManager::class)->name('billings.index');
 

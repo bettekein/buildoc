@@ -11,7 +11,7 @@ class BillingEditor extends Component
 {
     public Project $project;
     public ProgressBilling $billing;
-    
+
     // Inputs (Live)
     public $progress_rate = 0; // %
     public $amount_this_time = 0; // Tax excluded
@@ -34,12 +34,28 @@ class BillingEditor extends Component
     public $note;
     public $billing_number;
 
-    public function mount(Project $project, ProgressBilling $billing)
+    public function mount(Project $project, ?ProgressBilling $billingModel = null)
     {
         $this->project = $project;
-        $this->billing = $billing;
-        
-        $this->contract_amount = $project->contract_amount ?? 0;
+
+        if (!$billingModel) {
+            $this->billing = new ProgressBilling();
+            $this->billing->project_id = $project->id;
+        } else {
+            $this->billing = $billingModel;
+        }
+
+        // Calculate contract amount from Quotation Items if project property is missing
+        if (isset($project->contract_amount) && $project->contract_amount > 0) {
+            $this->contract_amount = $project->contract_amount;
+        } else {
+            // Fallback: Sum of quotation items
+            // Assuming quotationItems is loaded or can be accessed.
+            $this->contract_amount = $project->quotationItems()->get()->reduce(function ($carry, $item) {
+                return $carry + ($item->unit_price * $item->quantity);
+            }, 0);
+        }
+
         $this->retention_rate = $project->retention_rate ?? 20.00;
 
         // Determine previous billed amount (from DB)
@@ -50,14 +66,14 @@ class BillingEditor extends Component
             ->sum('amount_this_time') ?? 0;
 
         // Initialize fields
-        $this->progress_rate = $billing->progress_rate ?? 0;
-        $this->offset_amount = $billing->offset_amount ?? 0;
-        $this->retention_release_amount = $billing->retention_release_amount ?? 0;
-        
-        $this->billing_date = $billing->billing_date?->format('Y-m-d') ?? now()->format('Y-m-d');
-        $this->payment_date = $billing->payment_date?->format('Y-m-d');
-        $this->note = $billing->note;
-        $this->billing_number = $billing->billing_number;
+        $this->progress_rate = $this->billing->progress_rate ?? 0;
+        $this->offset_amount = $this->billing->offset_amount ?? 0;
+        $this->retention_release_amount = $this->billing->retention_release_amount ?? 0;
+
+        $this->billing_date = $this->billing->billing_date?->format('Y-m-d') ?? now()->format('Y-m-d');
+        $this->payment_date = $this->billing->payment_date?->format('Y-m-d');
+        $this->note = $this->billing->note;
+        $this->billing_number = $this->billing->billing_number;
 
         // Initial Calc
         $this->recalculate();
@@ -72,7 +88,7 @@ class BillingEditor extends Component
     // Requirement says "user rewrites 'current progress rate' OR 'current amount'".
     public function updatedAmountThisTime()
     {
-         $this->recalculate('amount');
+        $this->recalculate('amount');
     }
 
     public function updatedOffsetAmount()
@@ -114,12 +130,12 @@ class BillingEditor extends Component
 
         // Map results back to properties
         $this->cumulative_amount = $result['cumulative_amount'];
-        
+
         // If source was rate, update amount
         if ($source === 'rate') {
             $this->amount_this_time = $result['amount_this_time'];
         }
-        
+
         $this->tax_amount = $result['tax_amount'];
         $this->gross_billing_amount = $result['gross_billing_amount'];
         $this->current_retention_amount = $result['retention_money'];
@@ -131,8 +147,8 @@ class BillingEditor extends Component
         // Validation checks
         // 1. Cumulative amount <= Contract Amount (Allow small margin for rounding?)
         if ($this->cumulative_amount > $this->contract_amount) {
-             $this->addError('progress_rate', '累計出来高が契約金額を超過しています。');
-             return;
+            $this->addError('progress_rate', '累計出来高が契約金額を超過しています。');
+            return;
         }
 
         // 2. Current Amount >= 0 (Usually)
@@ -147,7 +163,7 @@ class BillingEditor extends Component
         ]);
 
         $this->billing->fill([
-            'project_id' => $this->project->id, 
+            'project_id' => $this->project->id,
             // 'tenant_id' handled by trait? usually yes but better be safe if creating
             'billing_round' => $this->billing->billing_round ?? ($this->project->progressBillings()->count() + 1),
             'progress_rate' => $this->progress_rate,
@@ -164,14 +180,14 @@ class BillingEditor extends Component
             'billing_number' => $this->billing_number,
             'status' => 'billed',
         ]);
-        
+
         // If creating, tenant_id is needed if not auto-set by trait properly in Livewire context without auth user sometimes?
         // But we have auth user. Trait should handle it.
 
         $this->billing->save();
 
         session()->flash('message', '請求情報を保存しました。');
-        
+
         // return redirect()->route('billings.index', $this->project);
     }
 
